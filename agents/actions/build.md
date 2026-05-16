@@ -42,6 +42,20 @@ Build Complete
 
 ---
 
+## Forbidden
+
+- Editing code without prior `hint.py <path>`
+- Editing a bound method body without prior `lookup.py --symbol <name>` (or `hint.py --symbol <name>`)
+- Editing shared semantics without prior `blast.py <node-id>`
+- Treating lookup/KG mappings as authoritative over raw artifacts
+- Landing a non-obvious change without a `// WHY:` (or language equivalent) marker
+- Bypassing application-runtime-container execution for compile/test/lint/security commands
+- Skipping any approval gate (code review at Step 4, security review at Step 6) or the signoff gate (Step 6.75)
+- Declaring done without the explicit Product Manager closeout at Step 6.9
+- Marking a feature `Done`/`Archived` without passing required signoffs
+
+---
+
 ## Execution Steps
 
 ### Step 0: Architect-Led Assembly Planning

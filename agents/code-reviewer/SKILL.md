@@ -267,6 +267,13 @@ Flag when you see:
 - Do not require markers for self-explanatory code; comments must explain rationale, not restate mechanics.
 - If markers changed, verify `python3 {PRODUCT_ROOT}/scripts/kg/validate.py --regenerate-decisions --check-decisions` passes.
 
+### 13. Hotspot, Ownership, and Bus-Factor Gating
+- When `{PRODUCT_ROOT}/planning-mds/knowledge-graph/coverage-report.yaml` carries Phase 3 freshness signals, consult them for each canonical node the PR touches before approval.
+- If a touched node has `hotspot_rank` ≤ 5 (or `hotspot_score` ≥ 0.80), require explicit second-reviewer evidence on the PR. Approving without it is a **High** severity finding.
+- If a touched node has `bus_factor_flag: true`, require acknowledgement from `primary_owner` on the PR. Missing acknowledgement is a **High** severity finding.
+- Thresholds and customers/orders examples live in `agents/architect/references/hotspot-review-guide.md`.
+- Hotspot signals are decision aids, not authority — they never override raw artifact or design judgment.
+
 ## Review Workflow
 
 ### Step 1: Gather Context

@@ -155,6 +155,7 @@ Your responsibility is to define **HOW** to build what the Product Manager speci
    - After adding canonical nodes or rationale entries, run `python3 {PRODUCT_ROOT}/scripts/kg/validate.py` to confirm no broken references.
    - When the session produced new code-index-worthy paths (e.g., new API contract files, schema files, architecture docs), add bindings in `code-index.yaml` so future agents can resolve those files to canonical nodes.
    - On feature close, harvest novel inline decision markers with `python3 {PRODUCT_ROOT}/scripts/kg/decisions.py`. Promote shared semantics into `canonical-nodes.yaml` rationale; leave local implementation reasoning inline.
+   - At each release-readiness checkpoint, review canonical nodes flagged with `bus_factor_flag: true` in `coverage-report.yaml` and propose knowledge-share follow-ups (pair programming, deliberate co-authoring, doc passes, rotation). Thresholds and customers/orders examples live in `agents/architect/references/hotspot-review-guide.md`.
 
 ## Capability Recommendation
 

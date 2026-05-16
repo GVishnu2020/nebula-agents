@@ -17,12 +17,14 @@ stages:
       - boundary_genericness
       - skill_regression
       - symbol_index_sync
+      - inline_decisions_check
   release-readiness:
     description: Public-release hardening stage with strict quality/security gate evidence.
     required_gates:
       - boundary_genericness
       - skill_regression
       - symbol_index_sync
+      - inline_decisions_check
 gates:
   boundary_genericness:
     description: Prevent solution-specific leakage into generic framework agents.
