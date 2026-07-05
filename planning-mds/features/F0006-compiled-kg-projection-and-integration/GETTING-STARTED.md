@@ -40,6 +40,20 @@ python3 scripts/kg/merge3.py \
 # → writes the merged file (canonical form) OR prints a typed conflict report; never both
 ```
 
+## Per-PR integration gates (Phase A merge train)
+
+Every PR passes the same sequence; the two human gates are deliberate pauses, recorded in the
+integration evidence run:
+
+1. **Gate 1 — feature review:** run the `feature-review` action against the contributor branch.
+   The integrator requires a passing verdict, or a maintainer waiver recorded with rationale.
+2. **Integrator run:** semantic merge (`merge3.py` + tracker rows), unconditional regeneration,
+   full validation, evidence run, prepared merge commit. The integrator never pushes.
+3. **Gate 2 — human test validation:** the maintainer exercises the feature on the prepared merge
+   worktree and records pass/fail. A fail is routed like a bounce; nothing is pushed.
+4. **Push:** the maintainer pushes the recorded-pass merge.
+5. **Green mainline:** validators re-run on the mainline before the next PR's integration starts.
+
 ## Run a compile and verify reproducibility (Phase B)
 
 ```bash

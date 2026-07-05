@@ -39,7 +39,9 @@ ever corrupt or silently stale the graph.
   - PR #47 (F0021): 7 merge conflicts, all tracker/KG (`REGISTRY.md`, `ROADMAP.md`,
     `canonical-nodes.yaml`, `feature-mappings.yaml`, `symbol-index.yaml`,
     `unbound-but-referenced.yaml`, `coverage-report.yaml`), zero code conflicts. Four more PRs
-    (#48–#51) fork from the same point with the same shape; PR #51 stacks on #47.
+    (#48–#51) fork from the same point with the same shape; PR #51 stacks on #47. Two more
+    (#53 F0022, #54 F0008) joined the queue on 2026-07-04 touching the identical KG/tracker file
+    set — the queue grows while integration stays manual.
   - Contributor tooling **re-serialized** curated YAML (indent style, comments stripped, unicode
     escapes), so both sides of most hunks contain the *same nodes* — git union merge would
     duplicate nodes and break structure; textual conflict resolution is noise-vs-signal work.
@@ -72,7 +74,8 @@ ever corrupt or silently stale the graph.
   feature ID (deterministic ordering rules), inside or alongside `merge3.py`.
 - The **integrator role** in `nebula-agents` (persona, `agent-map.yaml` wiring, `integrate` action,
   integration evidence contract) and its operating procedure for maintainers.
-- Draining the 5-PR queue in `nebula-insurance-crm` as the integrator's first production runs.
+- Draining the 7-PR queue in `nebula-insurance-crm` (#47–#51, #53, #54) as the integrator's first
+  production runs; contributor PRs that arrive before the train completes join the same train.
 
 **In Scope — Phase B (compiled projection):**
 - `planning-mds/kg-source/` shard layer: schema, directory layout, per-directory role ownership.
@@ -111,8 +114,12 @@ ever corrupt or silently stale the graph.
       action) and is the sole sanctioned writer of generated graph/tracker files on the mainline;
       it never edits source-authored files; conflicts route to architect (nodes/bindings) or PM
       (features/trackers) per the taxonomy.
-- [ ] All 5 open `nebula-insurance-crm` PRs are merged through integrator runs, each leaving an
-      integration evidence run and a green `validate.py`.
+- [ ] All open `nebula-insurance-crm` contributor PRs (7 at planning time: #47–#51, #53, #54) are
+      merged through integrator runs, each leaving an integration evidence run and a green
+      `validate.py`.
+- [ ] Every integration run is bracketed by two human gates, both recorded in the evidence run:
+      a passing `feature-review` verdict (or maintainer waiver with rationale) verified before the
+      run starts, and a maintainer test validation of the prepared merge worktree before push.
 - [ ] `kg-source/` schema is documented with per-directory ownership mapped to existing roles;
       `solution-ontology.yaml` has an explicit home in the classification.
 - [ ] `compile.py` is deterministic (stable ordering/formatting, no committed timestamps): same
@@ -338,6 +345,11 @@ A dedicated agent in `nebula-agents`, run **serially by the maintainer** at merg
 serialization comes from one maintainer running one agent at a time, which is what a merge queue
 would otherwise provide. Sole writer of generated graph/tracker files on the mainline.
 
+**Precondition (human gate 1):** the branch's feature carries a passing `feature-review` verdict
+(done-review), or the maintainer records an explicit waiver with rationale in the run inputs. The
+integrator verifies the verdict/waiver reference and halts without it — it never performs the
+review itself.
+
 Duties, per integration run:
 1. Determine merge base; merge code and source-authored files (git for code; `merge3.py` for KG
    sources and tracker rows).
@@ -349,6 +361,10 @@ Duties, per integration run:
    inputs (branch, base, PR), merge decisions, conflict report if any, validator outputs.
 6. Prepare the merge commit for the maintainer's push. The integrator never pushes to the mainline
    itself.
+7. **Pause for human test validation (human gate 2):** the run stops here. The maintainer
+   exercises the feature on the prepared merge worktree and records the outcome in the evidence
+   run; only a recorded pass gets pushed. A failed validation is handled like a bounce — routed to
+   the contributor or owning role, with any later re-run a new run.
 
 Hard boundary: the integrator **never edits source shards or feature docs**. Any integration that
 would require a source change is by definition a semantic collision and routes to the owning role:
@@ -364,7 +380,10 @@ the integrator re-runs.
 3. Local `validate.py` proves internal consistency; CI reproducibility check proves the committed
    projections match the sources.
 4. PR review sees small shard diffs plus collapsed generated diffs.
-5. Integrator run at merge time (above). Independent features merge with zero manual steps.
+5. Feature-review verdict (or recorded waiver) on the branch, integrator run at merge time
+   (above), then maintainer test validation on the prepared merge before push. Independent
+   features merge with zero manual *merge* steps — the only human touch points are these two
+   deliberate gates.
 
 ### 11. Validation rules (enforced by compiler + `validate.py` + CI)
 
@@ -381,14 +400,14 @@ the integrator re-runs.
 
 ## Sequencing & Migration Plan
 
-Ordering constraint (hard): **Phase A first.** The migration rewrites exactly the files all five
+Ordering constraint (hard): **Phase A first.** The migration rewrites exactly the files all seven
 open contributor PRs touch; migrating first would invalidate every open PR.
 
 | Step | Content | Exit proof |
 |------|---------|-----------|
 | A1 (S0001, S0002) | `merge3.py` + tracker-row merge on the current monolithic graph | Replays the PR #47 resolution: re-serialization hunks converge; the known real deltas (F0038 archive repoints, `excluded_features` regression, stale `status`) surface as typed conflicts/reports |
 | A2 (S0003) | Integrator role, `integrate` action, evidence contract | Dry-run integration of PR #47 produces a complete evidence run |
-| A3 (operational) | Drain the queue: #47 → #51 → #50/#48/#49 | 5 merged PRs, 5 integration evidence runs, mainline green |
+| A3 (operational) | Drain the queue: #47 → #51 → #50/#48/#49 → #53/#54 | 7 merged PRs, 7 integration evidence runs — each recording a feature-review verdict/waiver and a maintainer test-validation pass — mainline green |
 | B1 (S0004) | Shard schema + ownership spec; classify + CI *warnings* on generated-file hand-edits | Spec reviewed; warnings visible on PRs |
 | B2 (S0005) | `compile.py` + logical refs (F0005 absorbed) | Deterministic double-compile; resolver test matrix green |
 | B3 (S0006) | Decompiler: explode current graph → shards; round-trip proof | `compile(decompile(graph))` byte-identical; shards become truth; monolith becomes output |
@@ -406,8 +425,8 @@ single revert.
 |------|----------------|
 | Architect | Authors `nodes/`, `bindings/`, `policies/`, `ontology/` shards (G7); owns merge semantics for those kinds; resolves architect-routed conflicts |
 | Product Manager | Authors `features/` shards (path/status/depends_on — the single home); owns tracker prose; resolves PM-routed conflicts; archive = one shard edit |
-| **Integrator (new)** | Runs integration: semantic merge, unconditional recompile, validation, evidence; sole writer of generated files on mainline; never edits sources |
-| Maintainer (human) | Runs the integrator serially; pushes the prepared merge; owns overrides |
+| **Integrator (new)** | Runs integration: semantic merge, unconditional recompile, validation, evidence; sole writer of generated files on mainline; never edits sources; verifies the feature-review gate before running and pauses for maintainer test validation before push |
+| Maintainer (human) | Runs the integrator serially; owns both human gates (feature-review waivers, test validation of the prepared merge); pushes the prepared merge; owns overrides |
 | Quality Engineer / Code Reviewer | Signoff on tools (merge determinism, round-trip, CI guards) |
 | DevOps | CI reproducibility workflow, `.gitattributes`, branch protections |
 
@@ -417,14 +436,14 @@ single revert.
 |---------|--------|
 | `agents/integrator/SKILL.md` | **New** persona: duties 1–6, hard boundary, routing table, evidence contract |
 | `agents/agent-map.yaml` | Register `integrator` (reads: everything; writes: `{PRODUCT_ROOT}/planning-mds/knowledge-graph/**` generated outputs, tracker table regions, integration evidence dir — mainline context only). Phase B: add `kg-source/` write scopes to architect (`nodes/`,`bindings/`,`policies/`,`ontology/`) and PM (`features/`); narrow PM's `feature-mappings.yaml` write (becomes generated) |
-| `agents/actions/integrate.md` | **New** action: the integration run procedure, inputs, gates, bounce rules |
+| `agents/actions/integrate.md` | **New** action: the integration run procedure, inputs, gates (feature-review precondition, human-test-validation pause), bounce rules |
 | `agents/actions/README.md`, `agents/ROUTER.md` | Route/announce the new action |
 | `agents/actions/feature.md` | G7: architect authors shards (logical refs only); G8: archive = feature-shard `path:`/`status:` edit + recompile — delete the off-book repoint narrative |
 | `agents/templates/prompts/evidence-contract/feature-operator-friendly.md` | Same reconciliation (the "code paths only, stable across archive" claim becomes true) |
 | `agents/templates/prompts/evidence-contract/integrate-operator-friendly.md` | **New** operator prompt for integration runs |
 | `agents/docs/KNOWLEDGE-GRAPH.md` | Source/generated classification, shard schema, compile flow, logical refs, merge taxonomy |
 | `agents/docs/ORCHESTRATION-CONTRACT.md` | Integrator role, mainline generated-file ownership, conflict routing |
-| `agents/docs/MANUAL-ORCHESTRATION-RUNBOOK.md` | Maintainer procedure: run integrator, review evidence, push |
+| `agents/docs/MANUAL-ORCHESTRATION-RUNBOOK.md` | Maintainer procedure: verify feature-review verdict (or record waiver), run integrator, review evidence, test-validate the prepared merge, record the outcome, push |
 | `agents/templates/kg-reconciliation-template.md` | Shard-based reconciliation + logical-ref examples |
 | `agents/templates/feature-assembly-plan-template.md` | KG step points at shards, not monoliths |
 | `agents/templates/tracker-governance-template.md`, `feature-registry-template.md` | Mark generated table regions; sync rules reference the generator |
@@ -501,9 +520,10 @@ single revert.
 
 ## Rollout & Enablement
 
-- Phase A ships first and is exercised immediately: the 5-PR merge train in `nebula-insurance-crm`
+- Phase A ships first and is exercised immediately: the 7-PR merge train in `nebula-insurance-crm`
   is the integrator's shakedown cruise. Pre-compiler, its "recompile" step means: regenerate the
-  four derived files + `merge3.py` the curated trio + tracker rows.
+  four derived files + `merge3.py` the curated trio + tracker rows. Every train car passes the two
+  human gates: feature-review before its run, maintainer test validation before its push.
 - Phase B lands behind the round-trip proof; the reproducibility check runs warn-only until B5.
 - Other product repos adopt by applying B1–B5 with the same scripts; each adoption is tracked in
   that repo, not in this feature.

@@ -9,7 +9,8 @@
 Multi-contributor feature branches conflict on exactly the files no human (or LLM) should ever
 hand-merge: the knowledge-graph YAML and the feature trackers. The reference product repo
 (`nebula-insurance-crm`) proved it — PR #47 (F0021) carried 7 merge conflicts, **all** of them
-tracker/KG, zero code; four more contributor PRs (#48–#51) sit behind it with the same shape.
+tracker/KG, zero code; six more contributor PRs (#48–#51, plus #53/#54 which joined 2026-07-04)
+sit behind it touching the identical KG/tracker file set.
 Worse, contributor tooling re-serialized the curated YAML, so git's textual merge saw the *same
 nodes* as conflicting hunks, and a git union merge would silently duplicate nodes.
 
@@ -25,9 +26,11 @@ F0006 ends the problem class by treating the knowledge graph as a **compiled dat
 - A new **integrator role** (agent) runs serially at merge time as the sole writer of generated
   files on the mainline: merge sources, recompile, validate, emit integration evidence, prepare the
   merge for the maintainer. It never edits source shards; semantic collisions route to the owning
-  role (architect or PM).
+  role (architect or PM). Two **human gates** bracket each run: a passing `feature-review` verdict
+  (or recorded maintainer waiver) before it starts, and the maintainer's test validation of the
+  prepared merge before push.
 
-Sequencing is deliberate: the merge tool and integrator land **first** and drain the 5-PR queue on
+Sequencing is deliberate: the merge tool and integrator land **first** and drain the 7-PR queue on
 the *current* monolithic graph (the merge keys on semantic IDs, so it does not need the shard
 migration); only then does the source-shard migration rewrite the graph files. F0006 absorbs and
 supersedes **F0005** (move-invariant logical doc refs become the compiler's reference format).
@@ -61,11 +64,12 @@ supersedes **F0005** (move-invariant logical doc refs become the compiler's refe
 
 | Phase | Stories | Gate |
 |-------|---------|------|
-| **A — Governed integration (pre-migration)** | S0001, S0002, S0003 | The 5 open contributor PRs in `nebula-insurance-crm` (#47, #51, #50, #48, #49) merged via the integrator with green validators and integration evidence per merge |
+| **A — Governed integration (pre-migration)** | S0001, S0002, S0003 | The 7 open contributor PRs in `nebula-insurance-crm` (#47, #51, #50, #48, #49, #53, #54) merged via the integrator with green validators and integration evidence per merge, each bracketed by a feature-review verdict/waiver (gate 1) and maintainer test validation before push (gate 2) |
 | **B — Compiled projection** | S0004–S0009 | `kg-source/` is the only authored layer; compile round-trip is byte-identical; CI reproducibility check blocking; contract docs match shipped behavior |
 
 Phase A must complete before Phase B begins: the migration rewrites exactly the files every open
-PR touches (amendment: land the merge train first).
+PR touches (amendment: land the merge train first). Contributor PRs that arrive before the train
+completes join the same train.
 
 ## Architecture Review
 

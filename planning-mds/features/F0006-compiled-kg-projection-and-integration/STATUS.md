@@ -1,7 +1,7 @@
 # F0006 - Compiled Knowledge-Graph Projection and Governed Integration - Status
 
 **Overall Status:** Draft
-**Last Updated:** 2026-07-04
+**Last Updated:** 2026-07-05
 
 ## Story Checklist
 
@@ -22,9 +22,12 @@
 - [ ] `merge3.py` replays the PR #47 resolution: re-serialization hunks converge to zero conflicts
 - [ ] Known PR #47 real deltas surface as typed items (F0038 archive repoints, `excluded_features` regression, stale F0038 `status`)
 - [ ] Integrator dry-run on PR #47 emits a complete integration evidence run
+- [ ] Per-PR gate 1: `feature-review` verdict (or recorded maintainer waiver with rationale) captured before each integrator run
+- [ ] Per-PR gate 2: maintainer human test validation recorded on each prepared merge before push
 - [ ] PR #47 merged via integrator
 - [ ] PR #51 merged via integrator (stacked on #47 — delta replay)
 - [ ] PRs #50 / #48 / #49 merged via integrator
+- [ ] PRs #53 / #54 merged via integrator (F0022 work queues, F0008 broker insights — joined the queue 2026-07-04, identical KG/tracker footprint)
 - [ ] Mainline green after each merge (`validate.py`, orphan check, story-index zero-diff)
 
 ## Reference-Implementation Progress (product repo `scripts/kg/`)
@@ -44,7 +47,7 @@
 
 - [ ] `agents/integrator/SKILL.md` persona (duties, hard boundary, routing)
 - [ ] `agents/agent-map.yaml`: integrator registered; Phase-B shard write scopes for architect/PM
-- [ ] `agents/actions/integrate.md` + `actions/README.md` + `ROUTER.md` routing
+- [ ] `agents/actions/integrate.md` (incl. feature-review precondition + human test-validation pause) + `actions/README.md` + `ROUTER.md` routing
 - [ ] Integration evidence template + `integrate-operator-friendly.md` prompt
 - [ ] `agents/actions/feature.md` G7/G8 reconciled (no off-book repoint narrative)
 - [ ] `feature-operator-friendly.md` prompt reconciled
@@ -54,6 +57,7 @@
 ## Cross-Cutting
 
 - [ ] merge3 unit tests: converge-identical, one-side, field-recurse, ordered-list conflict, delete-vs-update, orphan edge, unique violation, all-or-nothing
+- [ ] Integrator human-gate tests: missing-verdict halt, waiver re-run proceeds, validation-fail leaves merge unpushed
 - [ ] Determinism tests: double-compile, cross-machine byte-identical
 - [ ] Migration idempotency + round-trip test
 - [ ] Reproducibility-check red test (synthetic hand-edit) and green test

@@ -23,8 +23,9 @@ existing (already canonicalized, post-merge-train) `canonical-nodes.yaml`,
 rewriting physical feature-doc refs to logical `F####/...` form (absorbing F0005-S0002's migration)
 — and the cutover gate is `compile(decompile(graph)) == graph`.
 
-Hard precondition: **the 5-PR merge train is complete** (Phase A exit). The migration rewrites
-exactly the files every open PR touches; migrating with open contributor PRs invalidates them all.
+Hard precondition: **the merge train is complete** (Phase A exit — 7 PRs as of 2026-07-05, plus
+any that arrive before the train finishes). The migration rewrites exactly the files every open PR
+touches; migrating with open contributor PRs invalidates them all.
 
 ## Acceptance Criteria
 
