@@ -34,6 +34,13 @@ the maintainer's test validation — exercise the feature on the merge worktree,
 before anything is pushed. The integrator enforces gate 1 and stops at gate 2; it performs
 neither review itself.
 
+Integration lands on a designated **integration branch**, never directly on `main` (maintainer
+decision, 2026-07-05). For this first train that branch is the existing `chore/merge-PRs` — the
+de facto mainline, well ahead of a stale `main` — and `main` receives only the single promotion
+merge after the train completes. In steady state the integrator **creates a dedicated integration
+branch per train** rather than reusing a maintainer branch; `integrate.md` documents the branch
+strategy and the promotion rule.
+
 Its first production runs are the 7-PR merge train in `nebula-insurance-crm`
 (#47 → #51 → #50/#48/#49 → #53/#54; #51 stacks on #47; #53 (F0022) and #54 (F0008) joined
 2026-07-04 with the identical KG/tracker footprint). Pre-compiler, "recompile" means: `merge3.py` the
@@ -132,6 +139,9 @@ curated trio (S0001) + tracker rows (S0002), then regenerate all derived outputs
 7. **Human gates bracket the run:** no integration starts without a feature-review verdict or a
    recorded maintainer waiver; no prepared merge is pushed without a recorded maintainer test
    validation. Both outcomes live in the evidence run.
+8. **Integration branch, never `main`:** prepared merges are pushed to the designated integration
+   branch (`chore/merge-PRs` for the Phase-A train; a dedicated integrator-created branch per
+   train in steady state). `main` receives only the maintainer's promotion merge.
 
 ## Out of Scope
 
@@ -165,6 +175,8 @@ curated trio (S0001) + tracker rows (S0002), then regenerate all derived outputs
       merge unpushed and recorded
 - [ ] Both human gates documented in `integrate.md` and `MANUAL-ORCHESTRATION-RUNBOOK.md`; the
       evidence template carries verdict/waiver and test-validation-outcome fields
+- [ ] Branch strategy documented in `integrate.md`: integration-branch target (never `main`),
+      `main`-promotion rule, steady-state dedicated-branch creation by the integrator
 - [ ] The 7-PR merge train executed: 7 merges, 7 evidence runs, mainline green after each
       (tracked as the feature's Phase-A exit in `STATUS.md`; later arrivals join the same train)
 - [ ] Contract-violation self-abort test (attempted source edit aborts the run)

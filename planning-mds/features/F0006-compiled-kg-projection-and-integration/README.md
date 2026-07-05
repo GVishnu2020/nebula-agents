@@ -71,6 +71,10 @@ Phase A must complete before Phase B begins: the migration rewrites exactly the 
 PR touches (amendment: land the merge train first). Contributor PRs that arrive before the train
 completes join the same train.
 
+All Phase-A integration lands on the `chore/merge-PRs` integration branch — never directly on
+`main`, which receives only the single promotion merge after the train completes. In steady state
+the integrator creates a dedicated integration branch per train; the promotion rule stays the same.
+
 ## Architecture Review
 
 **Phase B status:** Not Started

@@ -51,8 +51,13 @@ integration evidence run:
    full validation, evidence run, prepared merge commit. The integrator never pushes.
 3. **Gate 2 — human test validation:** the maintainer exercises the feature on the prepared merge
    worktree and records pass/fail. A fail is routed like a bounce; nothing is pushed.
-4. **Push:** the maintainer pushes the recorded-pass merge.
-5. **Green mainline:** validators re-run on the mainline before the next PR's integration starts.
+4. **Push:** the maintainer pushes the recorded-pass merge to the **integration branch**
+   (`chore/merge-PRs` for this train) — never directly to `main`.
+5. **Green integration branch:** validators re-run there before the next PR's integration starts.
+
+`main` receives exactly one promotion merge from the integration branch after the whole train
+completes. Steady state (after this train): the integrator creates a dedicated integration branch
+per train instead of reusing a maintainer branch; the promotion rule stays the same.
 
 ## Run a compile and verify reproducibility (Phase B)
 

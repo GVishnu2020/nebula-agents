@@ -28,7 +28,8 @@
 - [ ] PR #51 merged via integrator (stacked on #47 — delta replay)
 - [ ] PRs #50 / #48 / #49 merged via integrator
 - [ ] PRs #53 / #54 merged via integrator (F0022 work queues, F0008 broker insights — joined the queue 2026-07-04, identical KG/tracker footprint)
-- [ ] Mainline green after each merge (`validate.py`, orphan check, story-index zero-diff)
+- [ ] Integration branch (`chore/merge-PRs`) green after each merge (`validate.py`, orphan check, story-index zero-diff)
+- [ ] Promotion merge `chore/merge-PRs` → `main` after the train completes — the only change that touches `main`
 
 ## Reference-Implementation Progress (product repo `scripts/kg/`)
 

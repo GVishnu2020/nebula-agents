@@ -337,6 +337,12 @@ Generated files are **never merge inputs**.
 - `.gitattributes`: generated paths get `linguist-generated` (collapse PR diffs) and a merge
   driver (`merge=ours` or equivalent) so textual conflicts on them never block anyone — the
   recompile overwrites the result regardless.
+- **Integration never targets `main` directly** (maintainer decision, 2026-07-05). Integrator
+  merges land on a designated **integration branch**: for the Phase-A train, the existing
+  `chore/merge-PRs` (the de facto mainline — `main` is stale and is not a valid merge base).
+  `main` receives only the maintainer's single promotion merge after the train completes. In
+  steady state the integrator **creates a dedicated integration branch per train** instead of
+  reusing a maintainer branch; the same promotion rule applies.
 - Never git-union KG YAML. Never edit old evidence runs (append-only; supersede with a new run).
 
 ### 9. Integrator role (replaces merge queue + bot account)
@@ -349,6 +355,11 @@ would otherwise provide. Sole writer of generated graph/tracker files on the mai
 (done-review), or the maintainer records an explicit waiver with rationale in the run inputs. The
 integrator verifies the verdict/waiver reference and halts without it — it never performs the
 review itself.
+
+**Integration target:** every run lands on the designated integration branch, never directly on
+`main` (see git policy §8) — `chore/merge-PRs` for the Phase-A train; a dedicated
+integrator-created branch per train in steady state. `main` only ever receives the maintainer's
+promotion merge.
 
 Duties, per integration run:
 1. Determine merge base; merge code and source-authored files (git for code; `merge3.py` for KG
