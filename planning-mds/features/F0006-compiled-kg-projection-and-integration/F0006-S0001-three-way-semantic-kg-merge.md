@@ -19,13 +19,13 @@
 PR #47 demonstrated the failure mode: contributor tooling re-dumped `canonical-nodes.yaml` and
 `feature-mappings.yaml` (different list indent, comments stripped, `§` → `\xA7`), so git saw the
 *same 548-node graph* as hundreds of conflicting lines. The PR side was a strict superset only
-because it was the first merge from the shared fork point — the four PRs behind it need genuine
-delta replay against a moved mainline.
+because it was the first merge from the shared fork point — the six PRs behind it (#48–#51, plus
+#53/#54 which joined 2026-07-04) need genuine delta replay against a moved mainline.
 
 The design adapts OmniGraph's three-way, row-level branch merge (typed conflict taxonomy, merge
 checked against constraints, all-or-nothing publish) as a few hundred lines of Python over YAML
 records. Crucially, this story targets the **current monolithic** files — it keys on semantic IDs,
-not lines or files — so it unblocks the 5-PR merge train before any shard migration exists. In
+not lines or files — so it unblocks the 7-PR merge train before any shard migration exists. In
 Phase B the same tool merges individual source shards on the rare occasions they conflict.
 
 Includes a prerequisite: a **canonical serializer** in `kg_common.py` (stable key order, list
